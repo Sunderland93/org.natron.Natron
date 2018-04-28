@@ -1,0 +1,397 @@
+{
+    "id": "org.natron.Natron",
+    "runtime": "org.freedesktop.Sdk",
+    "runtime-version": "1.6",
+    "sdk": "org.freedesktop.Sdk",
+    "command": "Natron",
+    "rename-desktop-file": "natron.desktop",
+    "rename-appdata-file": "natron.xml",
+    "rename-icon": "natron",
+    "finish-args": [
+            "--share=ipc",
+            "--share=network",
+            "--socket=x11",
+            "--socket=pulseaudio",
+            "--filesystem=host",
+            "--device=dri"
+    ],
+    "modules": [
+            "shared-modules/glew/glew.json",
+    {
+            "name": "qt4",
+            "config-opts": [
+                    "-verbose",
+                    "-confirm-license",
+                    "-opensource",
+                    "-release",
+                    "-shared",
+                    "-no-static",
+                    "-fast",
+                    "-datadir", "/app/lib/qt4",
+                    "-importdir", "/app/lib/qt4/imports",
+                    "-plugindir", "/app/lib/qt4/plugins",
+                    "-translationdir", "/app/share/qt4/translations",
+                    "-accessibility",
+                    "-exceptions",
+                    "-fontconfig",
+                    "-glib",
+                    "-dbus-linked",
+                    "-openssl-linked",
+                    "-optimized-qmake",
+                    "-system-libjpeg",
+                    "-system-libpng",
+                    "-system-libtiff",
+                    "-system-proxies",
+                    "-system-zlib",
+                    "-no-cups",
+                    "-no-declarative",
+                    "-no-gtkstyle",
+                    "-no-javascript-jit",
+                    "-no-libmng",
+                    "-no-multimedia",
+                    "-no-nis",
+                    "-no-phonon",
+                    "-no-phonon-backend",
+                    "-no-qt3support",
+                    "-no-rpath",
+                    "-no-script",
+                    "-no-scripttools",
+                    "-no-sql-db2",
+                    "-no-sql-ibase",
+                    "-no-sql-mysql",
+                    "-no-sql-oci",
+                    "-no-sql-odbc",
+                    "-no-sql-psql",
+                    "-no-sql-sqlite",
+                    "-no-sql-sqlite2",
+                    "-no-sql-sqlite_symbian",
+                    "-no-sql-symsql",
+                    "-no-sql-tds",
+                    "-svg",
+                    "-no-webkit",
+                    "-xmlpatterns",
+                    "-nomake", "demos",
+                    "-nomake", "docs",
+                    "-nomake", "examples"
+    ],
+    "build-options": {
+        "env": {
+            "CXXFLAGS": "-std=gnu++98",
+            "LD_LIBRARY_PATH": "/run/build/qt4/lib/"
+        }
+    },
+    "sources": [
+        {
+            "type": "archive",
+            "url": "https://download.qt.io/official_releases/qt/4.8/4.8.7/qt-everywhere-opensource-src-4.8.7.tar.gz",
+            "sha256": "e2882295097e47fe089f8ac741a95fef47e0a73a3f3cdf21b56990638f626ea0"
+        }
+    ],
+    "cleanup": [
+            "/bin",
+            "/include",
+            "/lib/*.a",
+            "/lib/*.la",
+            "/lib/*.prl",
+            "/lib/pkgconfig",
+            "/lib/qt4/mkspecs",
+            "/lib/qt4/q3porting.xml"
+        ]
+    },
+    { 
+            "name": "opencolorio",
+            "buildsystem": "cmake",
+            "config-opts": [
+                "-DCMAKE_BUILD_TYPE=RelWithDebInfo",
+                "-DOCIO_BUILD_APPS:BOOL=OFF",
+                "-DOCIO_BUILD_DOCS:BOOL=OFF",
+                "-DOCIO_BUILD_STATIC:BOOL=OFF",
+                "-DOCIO_BUILD_TESTS:BOOL=OFF",
+                "-DPYTHON=/usr/bin/python3.5"
+                    ],
+            "builddir": true,
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/imageworks/OpenColorIO/archive/v1.0.9.tar.gz",
+                    "sha256": "27c81e691c15753cd2b560c2ca4bd5679a60c2350eedd43c99d44ca25d65ea7f"
+                }
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig",
+                "/share"
+            ]
+        },
+        {
+            "name": "boost",
+            "buildsystem": "simple",
+            "build-commands": [
+                "./bootstrap.sh --prefix=/app --with-libraries=date_time,filesystem,iostreams,locale,regex,system,thread",
+                "./b2 --build-type=minimal link=shared",
+                "./b2 --build-type=minimal link=shared install"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://sourceforge.net/projects/boost/files/boost/1.62.0/boost_1_62_0.tar.bz2",
+                    "sha256": "36c96b0f6155c98404091d8ceb48319a28279ca0333fba1ad8611eb90afb2ca0"
+                }
+            ],
+            "cleanup": [
+                "/include"
+            ]
+        },
+        {
+            "name": "shiboken",
+            "buildsystem": "cmake",
+            "config-opts": [
+                "-DCMAKE_SKIP_RPATH=true",
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DBUILD_TESTS=OFF"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://download.qt.io/official_releases/pyside/shiboken-1.2.2.tar.bz2",
+                    "sha256": "7625bbcf1fe313fd910c6b8c9cf49ac5495499f9d00867115a2f1f2a69fce5c4"
+                },
+                {
+                    "type": "patch",
+                    "path": "shiboken_gcc6.patch"
+                },
+                {
+                    "type": "patch",
+                    "path": "shiboken_memleak-instead-crash.patch"
+                }
+            ],
+            "cleanup": [
+                "/include"
+            ]
+        },
+        {
+            "name": "pyside",
+            "buildsystem": "cmake",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/pyside/PySide/archive/1.2.4.tar.gz",
+                    "sha256": "90f2d736e2192ac69e5a2ac798fce2b5f7bf179269daa2ec262986d488c3b0f7"
+                }
+            ],
+            "cleanup": [
+                "/include"
+            ]
+        },
+        {
+            "name": "openimageio",
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DOIIO_BUILD_TOOLS:BOOL=OFF",
+                "-DOIIO_BUILD_TESTS:BOOL=OFF",
+                "-DBUILDSTATIC:BOOL=OFF",
+                "-DINSTALL_DOCS:BOOL=OFF"
+            ],
+            "builddir": true,
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/OpenImageIO/oiio/archive/Release-1.7.15.tar.gz",
+                    "sha256": "5db80981a3f87ad4a2a0c684884ad28f8c879570318dc79ba485b69e6fe77e73"
+                }
+            ],
+            "cleanup": [
+                "/include"
+            ]
+        },
+        {
+            "name": "openexr",
+            "config-opts": [
+                "--enable-shared",
+                "--disable-static"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://download.savannah.nongnu.org/releases/openexr/openexr-2.2.0.tar.gz",
+                    "sha256": "36a012f6c43213f840ce29a8b182700f6cf6b214bea0d5735594136b44914231"
+                },
+                {
+                    "type": "patch",
+                    "path": "openexr-no-docs.patch"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "rm config.guess configure"
+                    ]
+                }
+            ],
+            "cleanup": [
+                "/bin",
+                "/include",
+                "/lib/*.la",
+                "/lib/pkgconfig",
+                "/share/aclocal"
+            ]
+        },
+        {
+            "name": "ffmpeg",
+            "config-opts": [
+                "--enable-shared",
+                "--disable-static",
+                "--disable-doc",
+                "--enable-gpl",
+                "--enable-version3",
+                "--disable-nonfree",
+                "--enable-optimizations",
+                "--enable-pthreads",
+
+                "--disable-bzlib",
+                "--disable-libgsm",
+                "--enable-libtheora",
+                "--enable-libvorbis",
+                "--enable-libvpx",
+                "--enable-libx264",
+                "--disable-x11grab",
+                "--enable-zlib",
+                "--disable-libxcb",
+                "--disable-lzma",
+
+                "--disable-programs",
+                "--disable-network",
+
+                "--disable-protocols",
+                "--enable-protocol=file",
+
+                "--disable-devices",
+
+                "--enable-muxer=avi",
+                "--enable-muxer=h264",
+                "--enable-muxer=mov",
+                "--enable-muxer=mp4",
+                "--enable-muxer=ogg",
+                "--enable-muxer=webm",
+
+                "--enable-demuxer=avi",
+                "--enable-demuxer=h264",
+                "--enable-demuxer=mov",
+                "--enable-demuxer=mp3",
+                "--enable-demuxer=ogg",
+                "--enable-demuxer=wav",
+
+                "--enable-parser=h264",
+                "--enable-parser=vorbis",
+
+                "--enable-encoder=aac",
+                "--enable-encoder=libtheora",
+                "--enable-encoder=libvorbis",
+                "--enable-encoder=libvpx_vp8",
+                "--enable-encoder=libvpx_vp9",
+                "--enable-encoder=libx264",
+                "--enable-encoder=mpeg4",
+
+                "--enable-decoder=aac",
+                "--enable-decoder=h264",
+                "--enable-decoder=libvorbis",
+                "--enable-decoder=libvpx_vp8",
+                "--enable-decoder=libvpx_vp9",
+                "--enable-decoder=mp3",
+                "--enable-decoder=mpeg4",
+                "--enable-decoder=pcm_s16le",
+                "--enable-decoder=theora"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://www.ffmpeg.org/releases/ffmpeg-3.4.tar.xz",
+                    "sha256": "aeee06e4d8b18d852c61ebbfe5e1bb7014b1e118e8728c1c2115f91e51bffbef"
+                }
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig"
+            ]
+        },
+        {
+            "name": "natron",
+            "buildsystem": "simple",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/NatronGitHub/Natron/archive/2.3.10.tar.gz",
+                    "sha256": "2aafe8376d653dbb5d835dcc9700b3b784ed840787df4d881a83c97cdacf9301"
+                },
+                {
+                    "type": "file",
+                    "path": "config.pri"
+                }
+            ],
+            "build-commands": [
+                "qmake-qt4 -r CONFIG=stable && make"
+            ]
+        },
+        {
+            "name": "openfx-misc",
+            "buildsystem": "simple",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/devernay/openfx-misc.git"
+                }
+            ],
+            "build-commands": [
+                "make CONFIG=release"
+            ],
+            "cleanup": [
+                "openfx/Documentation",
+                "openfx/Examples",
+                "openfx/website",
+                "openfx/scripts",
+                "openfx/Guide",
+                "openfx/HostSupport/expat-2.2.1",
+                "openfx/HostSupport/examples",
+                "openfx/Support/PropTester"
+            ]
+        },
+        {
+            "name": "openfx-io",
+            "buildsystem": "simple",
+            "sources": [
+                {
+                    "type": "git",
+                    "url": "https://github.com/NatronGitHub/openfx-io.git"
+                }
+            ],
+            "build-commands": [
+                "make CONFIG=release"
+            ],
+            "cleanup": [
+                "openfx/Documentation",
+                "openfx/Examples",
+                "openfx/website",
+                "openfx/scripts",
+                "openfx/Guide",
+                "openfx/HostSupport/expat-2.2.1",
+                "openfx/HostSupport/examples",
+                "openfx/Support/PropTester"
+            ]
+        },
+        {
+            "name": "opencolorio-configs",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/NatronGitHub/OpenColorIO-Configs/archive/Natron-v2.3.tar.gz",
+                    "sha256": "0192bd27e467332c4e61c0103804198f941c88f43df7d9ba8ebb41b79adda640"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "mv OpenColorIO-Configs-Natron-v2.3 OpenColorIO-Configs"
+                    ]
+                }
+            ]
+        }
+    ]
+}
