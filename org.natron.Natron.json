@@ -314,6 +314,25 @@
             ]
         },
         {
+            "name": "seexpr",
+            "buildsystem": "cmake",
+            "config-opts": [
+                "-DCMAKE_BUILD_TYPE=release",
+                "-DCMAKE_INSTALL_LIBDIR=lib"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/wdas/SeExpr/archive/v2-1.11.4.tar.gz",
+                    "sha256": "57fa60516eca7e8167188543766d36957379a36640ad81579070e6b43f696a59"
+                }
+            ],
+            "cleanup": [
+                "src/SeExprEditor/generated/"
+                "src/SeExpr/generated/"
+            ]
+        },
+        {
             "name": "natron",
             "buildsystem": "simple",
             "sources": [
