@@ -328,7 +328,7 @@
                 }
             ],
             "cleanup": [
-                "src/SeExprEditor/generated/"
+                "src/SeExprEditor/generated/",
                 "src/SeExpr/generated/"
             ]
         },
