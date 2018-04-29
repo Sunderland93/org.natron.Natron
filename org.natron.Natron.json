@@ -172,6 +172,10 @@
         {
             "name": "pyside",
             "buildsystem": "cmake",
+            "config-opts": [
+                "-DCMAKE_INSTALL_PREFIX=/app",
+                "-DBUILD_TESTS=OFF"
+            ],
             "sources": [
                 {
                     "type": "archive",
@@ -184,24 +188,36 @@
             ]
         },
         {
-            "name": "openimageio",
-            "buildsystem": "cmake-ninja",
+            "name": "ilmbase",
             "config-opts": [
-                "-DOIIO_BUILD_TOOLS:BOOL=OFF",
-                "-DOIIO_BUILD_TESTS:BOOL=OFF",
-                "-DBUILDSTATIC:BOOL=OFF",
-                "-DINSTALL_DOCS:BOOL=OFF"
+                "--enable-shared",
+                "--disable-static"
             ],
-            "builddir": true,
+            "build-options": {
+                "env": {
+                    "LDFLAGS": "-lpthread"
+                }
+            },
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/OpenImageIO/oiio/archive/Release-1.7.15.tar.gz",
-                    "sha256": "5db80981a3f87ad4a2a0c684884ad28f8c879570318dc79ba485b69e6fe77e73"
+                    "url": "https://download.savannah.nongnu.org/releases/openexr/ilmbase-2.2.0.tar.gz",
+                    "sha256": "ecf815b60695555c1fbc73679e84c7c9902f4e8faa6e8000d2f905b8b86cedc7"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "rm config.guess configure"
+                    ]
                 }
             ],
             "cleanup": [
-                "/include"
+                "/include/OpenEXR",
+                "/lib/libHalf.la",
+                "/lib/libIex*.la",
+                "/lib/libIlm*.la",
+                "/lib/libImath*.la",
+                "/lib/pkgconfig/IlmBase.pc"
             ]
         },
         {
@@ -236,6 +252,84 @@
             ]
         },
         {
+            "name": "openimageio",
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DOIIO_BUILD_TOOLS:BOOL=OFF",
+                "-DOIIO_BUILD_TESTS:BOOL=OFF",
+                "-DBUILDSTATIC:BOOL=OFF",
+                "-DINSTALL_DOCS:BOOL=OFF"
+            ],
+            "builddir": true,
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/OpenImageIO/oiio/archive/Release-1.7.15.tar.gz",
+                    "sha256": "5db80981a3f87ad4a2a0c684884ad28f8c879570318dc79ba485b69e6fe77e73"
+                }
+            ],
+            "cleanup": [
+                "/include"
+            ]
+        },
+        {
+            "name": "gpac",
+            "config-opts": [
+                "--disable-shared",
+                "--enable-static",
+                "--disable-doc",
+                "--extra-cflags=-fPIC"
+            ],
+            "make-install-args": [
+                "install-lib"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/gpac/gpac/archive/v0.6.1.tar.gz",
+                    "sha256": "67d1ac8f8b3e74da0e4e38ea926dc15bca6e9941e8f366e3538abcf13c103c09"
+                }
+            ],
+            "cleanup": [
+                "*"
+            ]
+        },
+        {
+            "name": "nasm",
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://www.nasm.us/pub/nasm/releasebuilds/2.13.03/nasm-2.13.03.tar.xz",
+                    "sha256": "812ecfb0dcbc5bd409aaa8f61c7de94c5b8752a7b00c632883d15b2ed6452573"
+                }
+            ],
+            "cleanup": [
+                "*"
+            ]
+        },
+        {
+            "name": "x264",
+            "config-opts": [
+                "--enable-shared",
+                "--disable-cli"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "http://ftp.videolan.org/pub/x264/snapshots/x264-snapshot-20180407-2245-stable.tar.bz2",
+                    "sha256": "86ea8ecb515f1a6e67df4bba37345ea908a0ea7da587d4f74f8afb6c33642f2b"
+                },
+                {
+                    "type": "patch",
+                    "path": "x264-gpac.patch"
+                }
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig"
+            ]
+        },
+        {
             "name": "ffmpeg",
             "config-opts": [
                 "--enable-shared",
@@ -253,7 +347,6 @@
                 "--enable-libvorbis",
                 "--enable-libvpx",
                 "--enable-libx264",
-                "--disable-x11grab",
                 "--enable-zlib",
                 "--disable-libxcb",
                 "--disable-lzma",
